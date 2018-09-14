@@ -1,11 +1,11 @@
-# jQuery Cropper.js for Rails
+# jQuery Cropper for Rails
 [![Gem Version](https://badge.fury.io/rb/jquery-cropper-rails.svg)](https://badge.fury.io/rb/jquery-cropper-rails)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/D1ceWard/jquery-cropper-rails/graphs/commit-activity)
 
 
-[Cropper.js](https://github.com/fengyuanchen/cropper) is simple jQuery image cropping plugin.
+[Cropper](https://github.com/fengyuanchen/cropper) is simple jQuery image cropping plugin.
 
-The `jquery-cropper-rails` gem integrates the `Cropper.js` jQuery plugin with the Rails asset pipeline.
+The `jquery-cropper-rails` gem integrates the `Cropper` jQuery plugin with the Rails asset pipeline.
 
 ## Installation
 
