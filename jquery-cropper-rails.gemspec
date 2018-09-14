@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.authors     = ['D1ceWard']
   spec.email       = ['contact@d1ceward.com']
 
-  spec.summary     = 'Integrate jQuery Cropper.js library with Rails asset pipeline'
-  spec.description = 'Cropper.js is a simple jQuery image cropping plugin. This gem integrates Cropper.js with Rails asset pipeline for ease of use.'
+  spec.summary     = 'Integrate jQuery Cropper library with Rails asset pipeline'
+  spec.description = 'Cropper is a simple jQuery image cropping plugin. This gem integrates Cropper with Rails asset pipeline for ease of use.'
   spec.homepage    = 'https://github.com/D1ceWard/jquery-cropper-rails'
 
   spec.files = Dir.chdir(File.expand_path(__dir__)) do
