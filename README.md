@@ -1,5 +1,5 @@
 # Cropper for Rails
-[![Gem Version](https://badge.fury.io/rb/jquery-cropper-rails.svg)](https://badge.fury.io/rb/jquery-cropper-rails)
+[![Gem Version](https://badge.fury.io/rb/cropper_rails.svg)](https://badge.fury.io/rb/cropper_rails)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/D1ceWard/jquery-cropper-rails/graphs/commit-activity)
 
 

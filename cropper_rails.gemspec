@@ -5,6 +5,7 @@ require 'cropper_rails/version'
 Gem::Specification.new do |spec|
   spec.name        = 'cropper_rails'
   spec.version     = Cropper::Rails::VERSION
+  spec.licenses    = ['MIT']
   spec.authors     = ['D1ceWard']
   spec.email       = ['contact@d1ceward.com']
 
@@ -19,7 +20,7 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
 
-  spec.add_runtime_dependency 'jquery-rails'
+  spec.add_runtime_dependency 'jquery-rails', '~> 4.0'
 
   spec.add_development_dependency 'bundler', '~> 1.16'
 end
