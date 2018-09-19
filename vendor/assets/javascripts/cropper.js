@@ -1,20 +1,18 @@
 /*!
- * Cropper v4.0.0
- * https://github.com/fengyuanchen/cropper
+ * Cropper.js v1.4.1
+ * https://fengyuanchen.github.io/cropperjs
  *
- * Copyright (c) 2014-2018 Chen Fengyuan
+ * Copyright 2015-present Chen Fengyuan
  * Released under the MIT license
  *
- * Date: 2018-04-01T06:27:27.267Z
+ * Date: 2018-07-15T09:55:31.170Z
  */
 
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(require('jquery')) :
-  typeof define === 'function' && define.amd ? define(['jquery'], factory) :
-  (factory(global.jQuery));
-}(this, (function ($) { 'use strict';
-
-  $ = $ && $.hasOwnProperty('default') ? $['default'] : $;
+  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+  typeof define === 'function' && define.amd ? define(factory) :
+  (global.Cropper = factory());
+}(this, (function () { 'use strict';
 
   var IN_BROWSER = typeof window !== 'undefined';
   var WINDOW = IN_BROWSER ? window : {};
@@ -44,8 +42,8 @@
   var CLASS_MOVE = NAMESPACE + '-move';
 
   // Data keys
-  var DATA_ACTION = 'action';
-  var DATA_PREVIEW = 'preview';
+  var DATA_ACTION = NAMESPACE + 'Action';
+  var DATA_PREVIEW = NAMESPACE + 'Preview';
 
   // Drag modes
   var DRAG_MODE_CROP = 'crop';
@@ -58,7 +56,6 @@
   var EVENT_CROP_MOVE = 'cropmove';
   var EVENT_CROP_START = 'cropstart';
   var EVENT_DBLCLICK = 'dblclick';
-  var EVENT_LOAD = 'load';
   var EVENT_POINTER_DOWN = WINDOW.PointerEvent ? 'pointerdown' : 'touchstart mousedown';
   var EVENT_POINTER_MOVE = WINDOW.PointerEvent ? 'pointermove' : 'touchmove mousemove';
   var EVENT_POINTER_UP = WINDOW.PointerEvent ? 'pointerup pointercancel' : 'touchend touchcancel mouseup';
@@ -79,6 +76,9 @@
 
     // Define the dragging mode of the cropper
     dragMode: DRAG_MODE_CROP, // 'crop', 'move' or 'none'
+
+    // Define the initial aspect ratio of the crop box
+    initialAspectRatio: NaN,
 
     // Define the aspect ratio of the crop box
     aspectRatio: NaN,
@@ -169,7 +169,7 @@
     zoom: null
   };
 
-  var TEMPLATE = '<div class="cropper-container" touch-action="none">' + '<div class="cropper-wrap-box">' + '<div class="cropper-canvas"></div>' + '</div>' + '<div class="cropper-drag-box"></div>' + '<div class="cropper-crop-box">' + '<span class="cropper-view-box"></span>' + '<span class="cropper-dashed dashed-h"></span>' + '<span class="cropper-dashed dashed-v"></span>' + '<span class="cropper-center"></span>' + '<span class="cropper-face"></span>' + '<span class="cropper-line line-e" data-action="e"></span>' + '<span class="cropper-line line-n" data-action="n"></span>' + '<span class="cropper-line line-w" data-action="w"></span>' + '<span class="cropper-line line-s" data-action="s"></span>' + '<span class="cropper-point point-e" data-action="e"></span>' + '<span class="cropper-point point-n" data-action="n"></span>' + '<span class="cropper-point point-w" data-action="w"></span>' + '<span class="cropper-point point-s" data-action="s"></span>' + '<span class="cropper-point point-ne" data-action="ne"></span>' + '<span class="cropper-point point-nw" data-action="nw"></span>' + '<span class="cropper-point point-sw" data-action="sw"></span>' + '<span class="cropper-point point-se" data-action="se"></span>' + '</div>' + '</div>';
+  var TEMPLATE = '<div class="cropper-container" touch-action="none">' + '<div class="cropper-wrap-box">' + '<div class="cropper-canvas"></div>' + '</div>' + '<div class="cropper-drag-box"></div>' + '<div class="cropper-crop-box">' + '<span class="cropper-view-box"></span>' + '<span class="cropper-dashed dashed-h"></span>' + '<span class="cropper-dashed dashed-v"></span>' + '<span class="cropper-center"></span>' + '<span class="cropper-face"></span>' + '<span class="cropper-line line-e" data-cropper-action="e"></span>' + '<span class="cropper-line line-n" data-cropper-action="n"></span>' + '<span class="cropper-line line-w" data-cropper-action="w"></span>' + '<span class="cropper-line line-s" data-cropper-action="s"></span>' + '<span class="cropper-point point-e" data-cropper-action="e"></span>' + '<span class="cropper-point point-n" data-cropper-action="n"></span>' + '<span class="cropper-point point-w" data-cropper-action="w"></span>' + '<span class="cropper-point point-s" data-cropper-action="s"></span>' + '<span class="cropper-point point-ne" data-cropper-action="ne"></span>' + '<span class="cropper-point point-nw" data-cropper-action="nw"></span>' + '<span class="cropper-point point-sw" data-cropper-action="sw"></span>' + '<span class="cropper-point point-se" data-cropper-action="se"></span>' + '</div>' + '</div>';
 
   var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
     return typeof obj;
@@ -477,7 +477,9 @@
   function getData(element, name) {
     if (isObject(element[name])) {
       return element[name];
-    } else if (element.dataset) {
+    }
+
+    if (element.dataset) {
       return element.dataset[name];
     }
 
@@ -1037,10 +1039,17 @@
     var uint8 = new Uint8Array(arrayBuffer);
     var data = '';
 
-    // TypedArray.prototype.forEach is not supported in some browsers.
-    forEach(uint8, function (value) {
-      data += fromCharCode(value);
-    });
+    // TypedArray.prototype.forEach is not supported in some browsers as IE.
+    if (isFunction(uint8.forEach)) {
+      // Use native `forEach` method first for better performance
+      uint8.forEach(function (value) {
+        data += fromCharCode(value);
+      });
+    } else {
+      forEach(uint8, function (value) {
+        data += fromCharCode(value);
+      });
+    }
 
     return 'data:' + mimeType + ';base64,' + btoa(data);
   }
@@ -1317,7 +1326,7 @@
       }
 
       if (positionLimited) {
-        if (viewMode) {
+        if (viewMode > (cropped ? 0 : 1)) {
           var newCanvasLeft = containerData.width - canvasData.width;
           var newCanvasTop = containerData.height - canvasData.height;
 
@@ -1439,8 +1448,8 @@
     initCropBox: function initCropBox() {
       var options = this.options,
           canvasData = this.canvasData;
-      var aspectRatio = options.aspectRatio;
 
+      var aspectRatio = options.aspectRatio || options.initialAspectRatio;
       var autoCropArea = Number(options.autoCropArea) || 0.8;
       var cropBoxData = {
         width: canvasData.width,
@@ -1484,8 +1493,8 @@
       if (sizeLimited) {
         var minCropBoxWidth = Number(options.minCropBoxWidth) || 0;
         var minCropBoxHeight = Number(options.minCropBoxHeight) || 0;
-        var maxCropBoxWidth = Math.min(containerData.width, limited ? canvasData.width : containerData.width);
-        var maxCropBoxHeight = Math.min(containerData.height, limited ? canvasData.height : containerData.height);
+        var maxCropBoxWidth = limited ? Math.min(containerData.width, canvasData.width, canvasData.width + canvasData.left, containerData.width - canvasData.left) : containerData.width;
+        var maxCropBoxHeight = limited ? Math.min(containerData.height, canvasData.height, canvasData.height + canvasData.top, containerData.height - canvasData.top) : containerData.height;
 
         // The min/maxCropBoxWidth/Height must be less than container's width/height
         minCropBoxWidth = Math.min(minCropBoxWidth, containerData.width);
@@ -1916,6 +1925,7 @@
         return;
       }
 
+      // This line is required for preventing page zooming in iOS browsers
       e.preventDefault();
 
       this.action = action;
@@ -2087,14 +2097,15 @@
           check(ACTION_EAST);
           width += range.x;
 
-          if (aspectRatio) {
-            height = width / aspectRatio;
-            top -= range.x / aspectRatio / 2;
-          }
-
           if (width < 0) {
             action = ACTION_WEST;
-            width = 0;
+            width = -width;
+            left -= width;
+          }
+
+          if (aspectRatio) {
+            height = width / aspectRatio;
+            top += (cropBoxData.height - height) / 2;
           }
 
           break;
@@ -2109,14 +2120,15 @@
           height -= range.y;
           top += range.y;
 
-          if (aspectRatio) {
-            width = height * aspectRatio;
-            left += range.y * aspectRatio / 2;
-          }
-
           if (height < 0) {
             action = ACTION_SOUTH;
-            height = 0;
+            height = -height;
+            top -= height;
+          }
+
+          if (aspectRatio) {
+            width = height * aspectRatio;
+            left += (cropBoxData.width - width) / 2;
           }
 
           break;
@@ -2131,14 +2143,15 @@
           width -= range.x;
           left += range.x;
 
-          if (aspectRatio) {
-            height = width / aspectRatio;
-            top += range.x / aspectRatio / 2;
-          }
-
           if (width < 0) {
             action = ACTION_EAST;
-            width = 0;
+            width = -width;
+            left -= width;
+          }
+
+          if (aspectRatio) {
+            height = width / aspectRatio;
+            top += (cropBoxData.height - height) / 2;
           }
 
           break;
@@ -2152,14 +2165,15 @@
           check(ACTION_SOUTH);
           height += range.y;
 
-          if (aspectRatio) {
-            width = height * aspectRatio;
-            left -= range.y * aspectRatio / 2;
-          }
-
           if (height < 0) {
             action = ACTION_NORTH;
-            height = 0;
+            height = -height;
+            top -= height;
+          }
+
+          if (aspectRatio) {
+            width = height * aspectRatio;
+            left += (cropBoxData.width - width) / 2;
           }
 
           break;
@@ -2202,14 +2216,18 @@
 
           if (width < 0 && height < 0) {
             action = ACTION_SOUTH_WEST;
-            height = 0;
-            width = 0;
+            height = -height;
+            width = -width;
+            top -= height;
+            left -= width;
           } else if (width < 0) {
             action = ACTION_NORTH_WEST;
-            width = 0;
+            width = -width;
+            left -= width;
           } else if (height < 0) {
             action = ACTION_SOUTH_EAST;
-            height = 0;
+            height = -height;
+            top -= height;
           }
 
           break;
@@ -2225,7 +2243,7 @@
             height -= range.y;
             top += range.y;
             width = height * aspectRatio;
-            left += range.y * aspectRatio;
+            left += cropBoxData.width - width;
           } else {
             check(ACTION_NORTH);
             check(ACTION_WEST);
@@ -2255,14 +2273,18 @@
 
           if (width < 0 && height < 0) {
             action = ACTION_SOUTH_EAST;
-            height = 0;
-            width = 0;
+            height = -height;
+            width = -width;
+            top -= height;
+            left -= width;
           } else if (width < 0) {
             action = ACTION_NORTH_EAST;
-            width = 0;
+            width = -width;
+            left -= width;
           } else if (height < 0) {
             action = ACTION_SOUTH_WEST;
-            height = 0;
+            height = -height;
+            top -= height;
           }
 
           break;
@@ -2305,14 +2327,18 @@
 
           if (width < 0 && height < 0) {
             action = ACTION_NORTH_EAST;
-            height = 0;
-            width = 0;
+            height = -height;
+            width = -width;
+            top -= height;
+            left -= width;
           } else if (width < 0) {
             action = ACTION_SOUTH_EAST;
-            width = 0;
+            width = -width;
+            left -= width;
           } else if (height < 0) {
             action = ACTION_NORTH_WEST;
-            height = 0;
+            height = -height;
+            top -= height;
           }
 
           break;
@@ -2352,14 +2378,18 @@
 
           if (width < 0 && height < 0) {
             action = ACTION_NORTH_WEST;
-            height = 0;
-            width = 0;
+            height = -height;
+            width = -width;
+            top -= height;
+            left -= width;
           } else if (width < 0) {
             action = ACTION_SOUTH_WEST;
-            width = 0;
+            width = -width;
+            left -= width;
           } else if (height < 0) {
             action = ACTION_NORTH_EAST;
-            height = 0;
+            height = -height;
+            top -= height;
           }
 
           break;
@@ -2674,9 +2704,9 @@
         var newHeight = naturalHeight * ratio;
 
         if (dispatchEvent(this.element, EVENT_ZOOM, {
-          originalEvent: _originalEvent,
+          ratio: ratio,
           oldRatio: width / naturalWidth,
-          ratio: newWidth / naturalWidth
+          originalEvent: _originalEvent
         }) === false) {
           return this;
         }
@@ -2824,9 +2854,20 @@
         var ratio = imageData.width / imageData.naturalWidth;
 
         forEach(data, function (n, i) {
-          n /= ratio;
-          data[i] = rounded ? Math.round(n) : n;
+          data[i] = n / ratio;
         });
+
+        if (rounded) {
+          // In case rounding off leads to extra 1px in right or bottom border
+          // we should round the top-left corner and the dimension (#343).
+          var bottom = Math.round(data.y + data.height);
+          var right = Math.round(data.x + data.width);
+
+          data.x = Math.round(data.x);
+          data.y = Math.round(data.y);
+          data.width = right - data.x;
+          data.height = bottom - data.y;
+        }
       } else {
         data = {
           x: 0,
@@ -3336,6 +3377,10 @@
             options = this.options;
 
 
+        if (!options.rotatable && !options.scalable) {
+          options.checkOrientation = false;
+        }
+
         if (!options.checkOrientation || !window.ArrayBuffer) {
           this.clone();
           return;
@@ -3449,42 +3494,21 @@
         }
 
         image.src = crossOriginUrl || url;
-
-        var start = this.start.bind(this);
-        var stop = this.stop.bind(this);
-
         this.image = image;
-        this.onStart = start;
-        this.onStop = stop;
-
-        if (this.isImg) {
-          if (element.complete) {
-            // start asynchronously to keep `this.cropper` is accessible in `ready` event handler.
-            this.timeout = setTimeout(start, 0);
-          } else {
-            addListener(element, EVENT_LOAD, start, {
-              once: true
-            });
-          }
-        } else {
-          image.onload = start;
-          image.onerror = stop;
-          addClass(image, CLASS_HIDE);
-          element.parentNode.insertBefore(image, element.nextSibling);
-        }
+        image.onload = this.start.bind(this);
+        image.onerror = this.stop.bind(this);
+        addClass(image, CLASS_HIDE);
+        element.parentNode.insertBefore(image, element.nextSibling);
       }
     }, {
       key: 'start',
-      value: function start(event) {
+      value: function start() {
         var _this2 = this;
 
         var image = this.isImg ? this.element : this.image;
 
-        if (event) {
-          image.onload = null;
-          image.onerror = null;
-        }
-
+        image.onload = null;
+        image.onerror = null;
         this.sizing = true;
 
         var IS_SAFARI = WINDOW.navigator && /(Macintosh|iPhone|iPod|iPad).*AppleWebKit/i.test(WINDOW.navigator.userAgent);
@@ -3586,6 +3610,7 @@
         this.initPreview();
         this.bind();
 
+        options.initialAspectRatio = Math.max(0, options.initialAspectRatio) || NaN;
         options.aspectRatio = Math.max(0, options.aspectRatio) || NaN;
         options.viewMode = Math.max(0, Math.min(3, Math.round(options.viewMode))) || 0;
 
@@ -3651,9 +3676,6 @@
     }, {
       key: 'uncreate',
       value: function uncreate() {
-        var element = this.element;
-
-
         if (this.ready) {
           this.unbuild();
           this.ready = false;
@@ -3664,12 +3686,6 @@
           this.sized = false;
         } else if (this.reloading) {
           this.xhr.abort();
-        } else if (this.isImg) {
-          if (element.complete) {
-            clearTimeout(this.timeout);
-          } else {
-            removeListener(element, EVENT_LOAD, this.onStart);
-          }
         } else if (this.image) {
           this.stop();
         }
@@ -3703,59 +3719,6 @@
 
   assign(Cropper.prototype, render, preview, events, handlers, change, methods);
 
-  if ($.fn) {
-    var AnotherCropper$1 = $.fn.cropper;
-    var NAMESPACE$1 = 'cropper';
-
-    $.fn.cropper = function jQueryCropper(option) {
-      for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-        args[_key - 1] = arguments[_key];
-      }
-
-      var result = void 0;
-
-      this.each(function (i, element) {
-        var $element = $(element);
-        var isDestroy = option === 'destroy';
-        var cropper = $element.data(NAMESPACE$1);
-
-        if (!cropper) {
-          if (isDestroy) {
-            return;
-          }
-
-          var options = $.extend({}, $element.data(), $.isPlainObject(option) && option);
-
-          cropper = new Cropper(element, options);
-          $element.data(NAMESPACE$1, cropper);
-        }
-
-        if (typeof option === 'string') {
-          var fn = cropper[option];
-
-          if ($.isFunction(fn)) {
-            result = fn.apply(cropper, args);
-
-            if (result === cropper) {
-              result = undefined;
-            }
-
-            if (isDestroy) {
-              $element.removeData(NAMESPACE$1);
-            }
-          }
-        }
-      });
-
-      return result !== undefined ? result : this;
-    };
-
-    $.fn.cropper.Constructor = Cropper;
-    $.fn.cropper.setDefaults = Cropper.setDefaults;
-    $.fn.cropper.noConflict = function noConflict() {
-      $.fn.cropper = AnotherCropper$1;
-      return this;
-    };
-  }
+  return Cropper;
 
 })));
