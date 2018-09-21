@@ -35,7 +35,7 @@ Add to your `app/assets/stylesheets/application.css`:
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/D1ceWard/cropper_rails. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+Bug reports and pull requests are welcome on GitHub at https://github.com/D1ceWard/cropper_rails. By contributing you agree to abide by the Code of Merit.
 
 ## Code of Conduct
 
