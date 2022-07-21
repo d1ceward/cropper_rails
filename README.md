@@ -1,6 +1,6 @@
 # Cropper for Rails
 [![Gem Version](https://badge.fury.io/rb/cropper_rails.svg)](https://badge.fury.io/rb/cropper_rails)
-[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/D1ceWard/jquery-cropper-rails/graphs/commit-activity)
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/d1ceward/jquery-cropper-rails/graphs/commit-activity)
 
 
 [Cropper.js](https://github.com/fengyuanchen/cropperjs) is simple javaScript image cropper.
@@ -35,7 +35,7 @@ Add to your `app/assets/stylesheets/application.css`:
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/D1ceWard/cropper_rails. By contributing you agree to abide by the Code of Merit.
+Bug reports and pull requests are welcome on GitHub at https://github.com/d1ceward/cropper_rails. By contributing you agree to abide by the Code of Merit.
 
 ## Code of Conduct
 
