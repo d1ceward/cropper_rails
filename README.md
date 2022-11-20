@@ -39,4 +39,4 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/d1cewa
 
 ## Code of Conduct
 
-Everyone interacting in the cropper_rails project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/D1ceWard/cropper_rails/blob/master/CODE_OF_CONDUCT.md).
+Everyone interacting in the cropper_rails project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/d1ceward/cropper_rails/blob/master/CODE_OF_CONDUCT.md).
