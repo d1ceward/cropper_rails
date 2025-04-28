@@ -1,6 +1,6 @@
 # Cropper for Rails
 [![Gem Version](https://badge.fury.io/rb/cropper_rails.svg)](https://badge.fury.io/rb/cropper_rails)
-[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/d1ceward/jquery-cropper-rails/graphs/commit-activity)
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-no-red.svg)](https://github.com/d1ceward/jquery-cropper-rails/graphs/commit-activity)
 
 
 [Cropper.js](https://github.com/fengyuanchen/cropperjs) is simple javaScript image cropper.
